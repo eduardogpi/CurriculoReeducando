@@ -37,8 +37,9 @@ export default function ValidationPage() {
 
     return (
         <Layout style={{ minHeight: "100vh" }}>
-            <Header style={{ background: "#001529", padding: "0 24px" }}>
-                <Title level={4} style={{ color: "white", margin: "16px 0" }}>
+            <Header style={{ background: "#000000", padding: "0 24px", display: "flex", alignItems: "center", gap: 16 }}>
+                <img src="/logo.jpg" alt="Logo" style={{ height: 40, borderRadius: 4 }} />
+                <Title level={4} style={{ color: "white", margin: 0 }}>
                     Sistema Penitenciário - Validação Pública
                 </Title>
             </Header>

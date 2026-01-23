@@ -20,9 +20,9 @@ export default function ValidationHome() {
 
     return (
         <Layout style={{ minHeight: "100vh" }}>
-            <Header style={{ background: "#001529", padding: "0 24px" }}>
-                <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-                    <SafetyCertificateOutlined style={{ color: 'white', fontSize: 24, marginRight: 16 }} />
+            <Header style={{ background: "#000000", padding: "0 24px" }}>
+                <div style={{ display: 'flex', alignItems: 'center', height: '100%', gap: 16 }}>
+                    <img src="/logo.jpg" alt="Logo" style={{ height: 40, borderRadius: 4 }} />
                     <Title level={4} style={{ color: "white", margin: 0 }}>
                         Sistema Penitenciário - Validação Pública
                     </Title>

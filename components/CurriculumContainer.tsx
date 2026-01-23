@@ -127,7 +127,7 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
         }
     };
 
-    const renderEducationList = (data: EducationItem[], title: string, emptyText: string, borderColor: string, icon: React.ReactNode) => (
+    const renderEducationList = (data: EducationItem[], title: string, emptyText: string, borderColor: string, icon: React.ReactNode, showActions: boolean = true) => (
         <Card
             title={<Space>{icon} <span>{title}</span></Space>}
             className="shadow-md"
@@ -139,7 +139,7 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
                 locale={{ emptyText }}
                 renderItem={(item) => (
                     <List.Item
-                        actions={[
+                        actions={showActions ? [
                             <Button
                                 key="download"
                                 type="link"
@@ -158,7 +158,7 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
                             >
                                 Validar
                             </Button>,
-                        ]}
+                        ] : []}
                     >
                         <List.Item.Meta
                             avatar={<Avatar icon={<FilePdfOutlined />} style={{ backgroundColor: item.hasCertificate ? '#1890ff' : '#ccc' }} />}
@@ -186,7 +186,8 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
 
     return (
         <Layout style={{ minHeight: "100vh", background: "#f0f2f5" }}>
-            <Header style={{ background: "#001529", padding: "0 24px", display: 'flex', alignItems: 'center' }}>
+            <Header style={{ background: "#000000", padding: "0 24px", display: 'flex', alignItems: 'center', gap: 16 }}>
+                <img src="/logo.jpg" alt="Logo" style={{ height: 40, borderRadius: 4 }} />
                 <Title level={3} style={{ color: "white", margin: 0 }}>
                     Sistema Penitenciário - Currículo de {currentPrisoner?.name || "Reeducando"}
                 </Title>
@@ -249,6 +250,9 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
                                     <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
                                         Adicionar Curso
                                     </Button>
+                                    <Button icon={<FilePdfOutlined />} onClick={() => window.print()}>
+                                        Imprimir Currículo
+                                    </Button>
                                     <Button icon={<CheckCircleOutlined />} onClick={() => message.success("Todos os certificados validados com sucesso!")}>
                                         Validar Certificados
                                     </Button>
@@ -262,10 +266,11 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
                         <Col xs={24} lg={12}>
                             {renderEducationList(
                                 coursesBefore,
-                                "Histórico Pregresso (Antes do Sistema)",
+                                "Histórico Pregresso",
                                 "Nenhum registro anterior encontrado.",
                                 "#1890ff", // Azul para externo
-                                <BookOutlined style={{ color: "#1890ff" }} />
+                                <BookOutlined style={{ color: "#1890ff" }} />,
+                                false // showActions = false
                             )}
                         </Col>
                         <Col xs={24} lg={12}>

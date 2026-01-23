@@ -139,13 +139,14 @@ const ReeducandoList: React.FC = () => {
         <Layout style={{ minHeight: "100vh", background: "#f0f2f5" }}>
             <Header
                 style={{
-                    background: "#001529",
+                    background: "#000000",
                     padding: "0 24px",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "space-between",
+                    gap: 16,
                 }}
             >
+                <img src="/logo.jpg" alt="Logo" style={{ height: 40, borderRadius: 4 }} />
                 <Title level={3} style={{ color: "white", margin: 0 }}>
                     Sistema Penitenciário
                 </Title>
