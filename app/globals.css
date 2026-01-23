@@ -39,6 +39,11 @@ body {
     display: none !important;
   }
 
+  /* Exibir cabeçalho de impressão */
+  .print-header {
+    display: block !important;
+  }
+
   /* Resetar background e sombras */
   body,
   .ant-layout,

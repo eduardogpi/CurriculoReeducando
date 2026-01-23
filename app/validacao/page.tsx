@@ -24,7 +24,7 @@ export default function ValidationHome() {
                 <div style={{ display: 'flex', alignItems: 'center', height: '100%', gap: 16 }}>
                     <img src="/logo.jpg" alt="Logo" style={{ height: 40, borderRadius: 4 }} />
                     <Title level={4} style={{ color: "white", margin: 0 }}>
-                        Sistema Penitenciário - Validação Pública
+                        Polícia Penal Goiás - Validação Pública
                     </Title>
                 </div>
             </Header>

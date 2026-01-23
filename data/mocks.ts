@@ -12,13 +12,20 @@ export interface EducationItem {
     externalValidationLink?: string; // Para externos
 }
 
+export interface SkillItem {
+    name: string;
+    source: string; // Onde foi adquirida
+    startDate: string;
+    endDate?: string; // Se undefined, é "Atualmente"
+}
+
 export interface Reeducando {
     id: string;
     name: string;
     registration: string;
     prisonUnit: string;
     status: "available" | "occupied";
-    skills: string[];
+    skills: SkillItem[];
     photoUrl?: string; // Futuro
     educationHistory: EducationItem[];
 }
@@ -30,7 +37,10 @@ export const MOCK_REEDUCANDOS: Reeducando[] = [
         registration: "123456-78",
         prisonUnit: "Casa de Prisão Provisória",
         status: "available",
-        skills: ["Eletricista", "Pintura"],
+        skills: [
+            { name: "Eletricista", source: "Curso Profissionalizante SENAI", startDate: "2023-01-10", endDate: "2023-06-15" },
+            { name: "Pintura", source: "Manutenção Predial Interna", startDate: "2023-07-01" } // Em aberto
+        ],
         educationHistory: [
             {
                 id: "101",
@@ -60,7 +70,10 @@ export const MOCK_REEDUCANDOS: Reeducando[] = [
         registration: "876543-21",
         prisonUnit: "Unidade Prisional Feminina da 1º Regional",
         status: "occupied",
-        skills: ["Costura", "Artesanato"],
+        skills: [
+            { name: "Costura", source: "Oficina de Costura Prisional", startDate: "2022-03-01" },
+            { name: "Artesanato", source: "Atividade Ocupacional", startDate: "2022-08-15", endDate: "2023-01-20" }
+        ],
         educationHistory: [
             {
                 id: "201",
@@ -98,7 +111,9 @@ export const MOCK_REEDUCANDOS: Reeducando[] = [
         registration: "112233-44",
         prisonUnit: "Penitenciária Odenir Guimarães",
         status: "available",
-        skills: ["Cozinha"],
+        skills: [
+            { name: "Cozinha", source: "Cozinha Geral da Unidade", startDate: "2023-05-10" }
+        ],
         educationHistory: [], // Sem cursos
     },
     {
@@ -107,7 +122,10 @@ export const MOCK_REEDUCANDOS: Reeducando[] = [
         registration: "556677-88",
         prisonUnit: "Unidade Prisional Feminina da 1º Regional",
         status: "occupied",
-        skills: ["Limpeza", "Jardinagem"],
+        skills: [
+            { name: "Limpeza", source: "Faxina Geral", startDate: "2022-01-10", endDate: "2022-12-20" },
+            { name: "Jardinagem", source: "Horta Comunitária", startDate: "2023-01-05" }
+        ],
         educationHistory: [
             {
                 id: "401",

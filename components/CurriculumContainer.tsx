@@ -15,6 +15,10 @@ import {
     Col,
     Space,
     App,
+    Modal,
+    Input,
+    Form,
+    DatePicker
 } from "antd";
 import {
     UserOutlined,
@@ -24,10 +28,11 @@ import {
     PlusOutlined,
     FilePdfOutlined,
     ToolOutlined,
+    HistoryOutlined
 } from "@ant-design/icons";
 import EducationModal from "./EducationModal";
 import dayjs from "dayjs";
-import { MOCK_REEDUCANDOS, Reeducando, EducationItem } from "@/data/mocks";
+import { MOCK_REEDUCANDOS, Reeducando, EducationItem, SkillItem } from "@/data/mocks";
 import { useRouter } from "next/navigation";
 
 const { Title, Text } = Typography;
@@ -40,14 +45,18 @@ interface CurriculumContainerProps {
 const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId }) => {
     const { message, modal } = App.useApp();
     const router = useRouter();
-    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // Modals
+    const [isEducationModalOpen, setIsEducationModalOpen] = useState(false);
+    const [isSkillModalOpen, setIsSkillModalOpen] = useState(false);
+    const [skillForm] = Form.useForm();
+
     const [currentPrisoner, setCurrentPrisoner] = useState<Reeducando | null>(null);
     const [isAvailableForWork, setIsAvailableForWork] = useState(true);
     const [educationList, setEducationList] = useState<EducationItem[]>([]);
 
-    // Novo estado para skills locais (no caso real viria do backend)
-    const [skills, setSkills] = useState<string[]>([]);
-    const [newSkill, setNewSkill] = useState("");
+    // Skills com metadados
+    const [skills, setSkills] = useState<SkillItem[]>([]);
 
     React.useEffect(() => {
         if (prisonerId) {
@@ -59,7 +68,6 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
                 setSkills(found.skills || []);
             } else {
                 message.error("Reeducando não encontrado.");
-                // router.push("/"); // Opcional: Redirecionar se não encontrar
             }
         }
     }, [prisonerId, message]);
@@ -68,41 +76,38 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
         return <div style={{ padding: 50, textAlign: "center" }}>Carregando dados do reeducando ou não encontrado...</div>;
     }
 
-    // Se não tiver ID (ex: teste direto), usa um fallback ou exibe erro, ou usa Mock[0]
-    // Para manter compatibilidade com o código anterior, se não passar ID, podemos pegar o primeiro ou exibir vazio.
-    // Vamos assumir que sempre passará ID agora.
-
-    const handleCreate = (values: Omit<EducationItem, "id" | "hasCertificate"> & { certificate?: any[] }) => {
+    const handleCreateEducation = (values: Omit<EducationItem, "id" | "hasCertificate"> & { certificate?: any[] }) => {
         const newItem: EducationItem = {
             id: Math.random().toString(36).substr(2, 9),
             ...values,
             hasCertificate: !!(values.certificate && values.certificate.length > 0),
         };
         setEducationList([...educationList, newItem]);
-        setIsModalOpen(false);
+        setIsEducationModalOpen(false);
         message.success("Histórico educacional adicionado com sucesso!");
     };
 
-    const handleAddSkill = () => {
-        if (newSkill && !skills.includes(newSkill)) {
-            setSkills([...skills, newSkill]);
-            setNewSkill("");
-            message.success("Habilidade adicionada!");
-        } else if (skills.includes(newSkill)) {
-            message.warning("Habilidade já existe.");
-        }
+    const handleAddSkill = (values: any) => {
+        const newSkill: SkillItem = {
+            name: values.name,
+            source: values.source,
+            startDate: values.startDate.format("YYYY-MM-DD"),
+            endDate: values.endDate ? values.endDate.format("YYYY-MM-DD") : undefined
+        };
+        setSkills([...skills, newSkill]);
+        setIsSkillModalOpen(false);
+        skillForm.resetFields();
+        message.success("Habilidade adicionada com sucesso!");
     };
 
     const handleValidation = (item: EducationItem) => {
         if (item.location === "internal") {
             if (item.validationHash) {
-                // Redireciona para página pública de validação
                 window.open(`/validacao/${item.validationHash}`, '_blank');
             } else {
                 message.warning("Hash de validação não disponível para este certificado.");
             }
         } else {
-            // Validação Externa (Modal ou Link)
             if (item.externalValidationLink) {
                 modal.confirm({
                     title: "Validação Externa",
@@ -112,7 +117,6 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
                     cancelText: "Fechar"
                 });
             } else {
-                // Caso não tenha link, permitiria upload ou inserção (simulado)
                 modal.info({
                     title: "Certificação Externa",
                     content: (
@@ -189,7 +193,7 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
             <Header style={{ background: "#000000", padding: "0 24px", display: 'flex', alignItems: 'center', gap: 16 }}>
                 <img src="/logo.jpg" alt="Logo" style={{ height: 40, borderRadius: 4 }} />
                 <Title level={3} style={{ color: "white", margin: 0 }}>
-                    Sistema Penitenciário - Currículo de {currentPrisoner?.name || "Reeducando"}
+                    Polícia Penal de Goiás - Currículo de {currentPrisoner?.name || "Reeducando"}
                 </Title>
                 <div style={{ marginLeft: "auto" }}>
                     <Button type="text" style={{ color: "white" }} onClick={() => router.push("/")}>
@@ -199,6 +203,18 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
             </Header>
             <Content style={{ padding: "24px 50px" }}>
                 <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+
+                    {/* Cabeçalho de Impressão (Visível apenas na impressão via CSS) */}
+                    <div className="print-header" style={{ display: 'none', textAlign: 'center', marginBottom: 20 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 15, marginBottom: 10 }}>
+                            <img src="/logo.jpg" alt="Brasão" style={{ height: 80 }} />
+                            <div style={{ textAlign: 'left' }}>
+                                <h1 style={{ margin: 0, fontSize: 24, textTransform: 'uppercase' }}>Polícia Penal de Goiás</h1>
+                                <h2 style={{ margin: 0, fontSize: 16, fontWeight: 'normal' }}>Sistema de Gestão Prisional</h2>
+                            </div>
+                        </div>
+                        <h3 style={{ borderBottom: '2px solid #000', paddingBottom: 5, marginTop: 20 }}>CURRÍCULO DO REEDUCANDO</h3>
+                    </div>
 
                     {/* Header do Preso */}
                     <Card className="mb-6 shadow-md bg-white" >
@@ -227,27 +243,41 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
                                 </div>
                             </Col>
                             <Col xs={24} sm={6} style={{ textAlign: "right", display: 'flex', flexDirection: 'column', gap: 10 }}>
-                                <Card size="small" title={<Space><ToolOutlined /> Expeciência / Habilidades</Space>} style={{ textAlign: 'left' }}>
-                                    <div style={{ marginBottom: 8 }}>
-                                        {skills.map(s => <Tag key={s} color="blue" style={{ marginBottom: 4 }}>{s}</Tag>)}
-                                        {skills.length === 0 && <Text type="secondary" style={{ fontSize: 12 }}>Nenhuma habilidade registrada.</Text>}
-                                    </div>
-                                    <Space.Compact style={{ width: '100%' }}>
-                                        <input
-                                            placeholder="Nova hab."
-                                            value={newSkill}
-                                            onChange={(e) => setNewSkill(e.target.value)}
-                                            style={{ width: 'calc(100% - 32px)', padding: '4px 8px', border: '1px solid #d9d9d9', borderRadius: '6px 0 0 6px', outline: 'none' }}
+                                <Card size="small" title={<Space><ToolOutlined />Experiência de Trabalho</Space>} style={{ textAlign: 'left' }} className="shadow-md">
+                                    <div style={{ maxHeight: 200, overflowY: 'auto' }}>
+                                        <List
+                                            itemLayout="horizontal"
+                                            dataSource={skills}
+                                            renderItem={(item) => (
+                                                <List.Item style={{ padding: '8px 0' }}>
+                                                    <List.Item.Meta
+                                                        avatar={<Avatar size="small" icon={<HistoryOutlined />} style={{ backgroundColor: '#1890ff' }} />}
+                                                        title={<Text strong>{item.name}</Text>}
+                                                        description={
+                                                            <div style={{ fontSize: 12 }}>
+                                                                <div>{item.source}</div>
+                                                                <Text type="secondary">
+                                                                    {dayjs(item.startDate).format("MMM/YYYY")} -
+                                                                    {item.endDate ? dayjs(item.endDate).format("MMM/YYYY") : " Atual"}
+                                                                </Text>
+                                                            </div>
+                                                        }
+                                                    />
+                                                </List.Item>
+                                            )}
                                         />
-                                        <Button icon={<PlusOutlined />} type="primary" onClick={handleAddSkill} />
-                                    </Space.Compact>
+                                        {skills.length === 0 && <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 10 }}>Nenhuma experiência registrada.</Text>}
+                                    </div>
+                                    <Button type="dashed" icon={<PlusOutlined />} block onClick={() => setIsSkillModalOpen(true)}>
+                                        Adicionar Experiência
+                                    </Button>
                                 </Card>
                             </Col>
                         </Row>
                         <Row justify="end" style={{ marginTop: 16 }}>
                             <Col>
                                 <Space>
-                                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
+                                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsEducationModalOpen(true)}>
                                         Adicionar Curso
                                     </Button>
                                     <Button icon={<FilePdfOutlined />} onClick={() => window.print()}>
@@ -284,11 +314,43 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
                         </Col>
                     </Row>
 
+                    {/* Modais */}
                     <EducationModal
-                        open={isModalOpen}
-                        onCreate={handleCreate}
-                        onCancel={() => setIsModalOpen(false)}
+                        open={isEducationModalOpen}
+                        onCreate={handleCreateEducation}
+                        onCancel={() => setIsEducationModalOpen(false)}
                     />
+
+                    <Modal
+                        title="Adicionar Experiência de Trabalho / Habilidade"
+                        open={isSkillModalOpen}
+                        onOk={() => skillForm.submit()}
+                        onCancel={() => setIsSkillModalOpen(false)}
+                        okText="Adicionar"
+                        cancelText="Cancelar"
+                    >
+                        <Form form={skillForm} layout="vertical" onFinish={handleAddSkill}>
+                            <Form.Item name="name" label="Função / Habilidade" rules={[{ required: true, message: 'Obrigatório' }]}>
+                                <Input placeholder="Ex: Eletricista, Pintor" />
+                            </Form.Item>
+                            <Form.Item name="source" label="Local / Instituição" rules={[{ required: true, message: 'Obrigatório' }]}>
+                                <Input placeholder="Ex: Manutenção Predial, Curso SENAI" />
+                            </Form.Item>
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Form.Item name="startDate" label="Data de Início" rules={[{ required: true, message: 'Obrigatório' }]}>
+                                        <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" placeholder="Selecione" />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item name="endDate" label="Data de Término" extra="Deixe em branco se for atual">
+                                        <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" placeholder="Selecione" />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        </Form>
+                    </Modal>
+
                 </div>
             </Content>
         </Layout>

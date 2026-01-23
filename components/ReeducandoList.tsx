@@ -26,7 +26,7 @@ const ReeducandoList: React.FC = () => {
 
     // Listas únicas para selects de filtro
     const units = Array.from(new Set(MOCK_REEDUCANDOS.map(r => r.prisonUnit))).filter(Boolean);
-    const allSkills = Array.from(new Set(MOCK_REEDUCANDOS.flatMap(r => r.skills))).filter(Boolean);
+    const allSkills = Array.from(new Set(MOCK_REEDUCANDOS.flatMap(r => r.skills.map(s => s.name)))).filter(Boolean);
 
     useEffect(() => {
         let result = data;
@@ -43,7 +43,7 @@ const ReeducandoList: React.FC = () => {
         }
 
         if (skillFilter) {
-            result = result.filter(item => item.skills.includes(skillFilter));
+            result = result.filter(item => item.skills.some(s => s.name === skillFilter));
         }
 
         setFilteredData(result);
@@ -99,10 +99,10 @@ const ReeducandoList: React.FC = () => {
             title: "Habilidades",
             dataIndex: "skills",
             key: "skills",
-            render: (skills: string[]) => (
+            render: (skills: any[]) => (
                 <>
-                    {skills && skills.map(skill => (
-                        <Tag color="blue" key={skill}>{skill}</Tag>
+                    {skills && skills.map((skill, index) => (
+                        <Tag color="blue" key={index}>{skill.name}</Tag>
                     ))}
                 </>
             )
@@ -148,7 +148,7 @@ const ReeducandoList: React.FC = () => {
             >
                 <img src="/logo.jpg" alt="Logo" style={{ height: 40, borderRadius: 4 }} />
                 <Title level={3} style={{ color: "white", margin: 0 }}>
-                    Sistema Penitenciário
+                    Polícia Penal Goiás
                 </Title>
             </Header>
             <Content style={{ padding: "24px 50px" }}>
