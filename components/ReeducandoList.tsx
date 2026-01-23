@@ -3,8 +3,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Table, Button, Tag, Space, Layout, Typography, Card, Input, Modal, Form, message, Select, Row, Col } from "antd";
-import { PlusOutlined, SearchOutlined, EyeOutlined } from "@ant-design/icons";
+import { Table, Button, Tag, Space, Layout, Typography, Card, Input, Modal, Form, message, Select, Row, Col, Avatar } from "antd";
+import { PlusOutlined, SearchOutlined, EyeOutlined, UserOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { MOCK_REEDUCANDOS, Reeducando } from "@/data/mocks";
 
@@ -60,7 +60,8 @@ const ReeducandoList: React.FC = () => {
                     registration: values.registration,
                     prisonUnit: values.prisonUnit || "Unidade Padrão",
                     status: "available",
-                    skills: [], // Habilidades começam vazias ou poderiam ser adicionadas no form
+                    photoUrl: values.photoUrl || undefined,
+                    skills: [],
                     educationHistory: [],
                 };
 
@@ -79,6 +80,12 @@ const ReeducandoList: React.FC = () => {
     };
 
     const columns = [
+        {
+            title: "Foto",
+            dataIndex: "photoUrl",
+            key: "photo",
+            render: (url: string) => <Avatar size="large" src={url} icon={<UserOutlined />} />,
+        },
         {
             title: "Nome",
             dataIndex: "name",
@@ -236,6 +243,12 @@ const ReeducandoList: React.FC = () => {
                                     ]}
                                 >
                                     <Input placeholder="Ex: João da Silva" />
+                                </Form.Item>
+                                <Form.Item
+                                    name="photoUrl"
+                                    label="URL da Foto (Opcional)"
+                                >
+                                    <Input placeholder="https://..." />
                                 </Form.Item>
                                 <Form.Item
                                     name="registration"

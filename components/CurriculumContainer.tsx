@@ -33,7 +33,7 @@ import {
 import EducationModal from "./EducationModal";
 import dayjs from "dayjs";
 import { MOCK_REEDUCANDOS, Reeducando, EducationItem, SkillItem } from "@/data/mocks";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const { Title, Text } = Typography;
 const { Header, Content } = Layout;
@@ -45,6 +45,8 @@ interface CurriculumContainerProps {
 const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId }) => {
     const { message, modal } = App.useApp();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const isReadOnly = searchParams.get("readonly") === "true";
 
     // Modals
     const [isEducationModalOpen, setIsEducationModalOpen] = useState(false);
@@ -98,6 +100,14 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
         setIsSkillModalOpen(false);
         skillForm.resetFields();
         message.success("Habilidade adicionada com sucesso!");
+    };
+
+    const handleChangePhoto = () => {
+        const newUrl = window.prompt("Insira a nova URL da foto:", currentPrisoner?.photoUrl || "");
+        if (newUrl !== null) {
+            setCurrentPrisoner(prev => prev ? { ...prev, photoUrl: newUrl } : null);
+            message.success("Foto atualizada!");
+        }
     };
 
     const handleValidation = (item: EducationItem) => {
@@ -220,7 +230,15 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
                     <Card className="mb-6 shadow-md bg-white" >
                         <Row gutter={[24, 24]} align="middle">
                             <Col xs={24} sm={4} style={{ textAlign: "center" }}>
-                                <Avatar size={100} icon={<UserOutlined />} />
+                                <div onClick={() => !isReadOnly && handleChangePhoto()} style={{ cursor: isReadOnly ? 'default' : 'pointer', display: 'inline-block' }}>
+                                    <Avatar
+                                        size={100}
+                                        src={currentPrisoner?.photoUrl}
+                                        icon={<UserOutlined />}
+                                        style={{ border: '2px solid #d9d9d9' }}
+                                    />
+                                    {!isReadOnly && <div style={{ fontSize: 12, marginTop: 4, color: '#1890ff' }}>Alterar Foto</div>}
+                                </div>
                             </Col>
                             <Col xs={24} sm={14}>
                                 <Title level={2} style={{ margin: 0 }}>{currentPrisoner?.name}</Title>
@@ -228,13 +246,17 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
                                 <Text type="secondary" style={{ fontSize: 14 }}>Unidade: {currentPrisoner?.prisonUnit}</Text>
                                 <div style={{ marginTop: 16 }}>
                                     <Text strong style={{ marginRight: 8 }}>Situação de Trabalho:</Text>
-                                    <Switch
-                                        checkedChildren="Disponível para Trabalho Externo"
-                                        unCheckedChildren="Ocupado / Trabalhando"
-                                        checked={isAvailableForWork}
-                                        onChange={setIsAvailableForWork}
-                                        style={{ background: isAvailableForWork ? '#52c41a' : '#faad14' }}
-                                    />
+                                    {!isReadOnly ? (
+                                        <Switch
+                                            checkedChildren="Disponível para Trabalho Externo"
+                                            unCheckedChildren="Ocupado / Trabalhando"
+                                            checked={isAvailableForWork}
+                                            onChange={setIsAvailableForWork}
+                                            style={{ background: isAvailableForWork ? '#52c41a' : '#faad14' }}
+                                        />
+                                    ) : (
+                                        <></>
+                                    )}
                                     <div style={{ marginTop: 8 }}>
                                         <Tag color={isAvailableForWork ? "success" : "warning"}>
                                             {isAvailableForWork ? "Disponível para Serviço Externo" : "Ocupado: Trabalho Interno"}
@@ -268,7 +290,7 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
                                         />
                                         {skills.length === 0 && <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 10 }}>Nenhuma experiência registrada.</Text>}
                                     </div>
-                                    <Button type="dashed" icon={<PlusOutlined />} block onClick={() => setIsSkillModalOpen(true)}>
+                                    <Button type="dashed" icon={<PlusOutlined />} block onClick={() => setIsSkillModalOpen(true)} disabled={isReadOnly}>
                                         Adicionar Experiência
                                     </Button>
                                 </Card>
@@ -277,15 +299,19 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
                         <Row justify="end" style={{ marginTop: 16 }}>
                             <Col>
                                 <Space>
-                                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsEducationModalOpen(true)}>
-                                        Adicionar Curso
-                                    </Button>
+                                    {!isReadOnly && (
+                                        <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsEducationModalOpen(true)}>
+                                            Adicionar Curso
+                                        </Button>
+                                    )}
                                     <Button icon={<FilePdfOutlined />} onClick={() => window.print()}>
                                         Imprimir Currículo
                                     </Button>
-                                    <Button icon={<CheckCircleOutlined />} onClick={() => message.success("Todos os certificados validados com sucesso!")}>
-                                        Validar Certificados
-                                    </Button>
+                                    {!isReadOnly && (
+                                        <Button icon={<CheckCircleOutlined />} onClick={() => message.success("Todos os certificados validados com sucesso!")}>
+                                            Validar Certificados
+                                        </Button>
+                                    )}
                                 </Space>
                             </Col>
                         </Row>

@@ -22,7 +22,7 @@ export default function StudentAccessPage() {
 
             if (found) {
                 message.success(`Bem-vindo, ${found.name.split(" ")[0]}`);
-                router.push(`/curriculo/${found.id}`);
+                router.push(`/curriculo/${found.id}?readonly=true`);
             } else {
                 message.error("Matrícula não encontrada.");
                 setLoading(false);

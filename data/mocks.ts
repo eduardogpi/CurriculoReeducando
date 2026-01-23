@@ -26,7 +26,7 @@ export interface Reeducando {
     prisonUnit: string;
     status: "available" | "occupied";
     skills: SkillItem[];
-    photoUrl?: string; // Futuro
+    photoUrl?: string;
     educationHistory: EducationItem[];
 }
 
@@ -37,6 +37,7 @@ export const MOCK_REEDUCANDOS: Reeducando[] = [
         registration: "123456-78",
         prisonUnit: "Casa de Prisão Provisória",
         status: "available",
+        photoUrl: "https://randomuser.me/api/portraits/men/1.jpg",
         skills: [
             { name: "Eletricista", source: "Curso Profissionalizante SENAI", startDate: "2023-01-10", endDate: "2023-06-15" },
             { name: "Pintura", source: "Manutenção Predial Interna", startDate: "2023-07-01" } // Em aberto
@@ -70,6 +71,7 @@ export const MOCK_REEDUCANDOS: Reeducando[] = [
         registration: "876543-21",
         prisonUnit: "Unidade Prisional Feminina da 1º Regional",
         status: "occupied",
+        photoUrl: "https://randomuser.me/api/portraits/women/2.jpg",
         skills: [
             { name: "Costura", source: "Oficina de Costura Prisional", startDate: "2022-03-01" },
             { name: "Artesanato", source: "Atividade Ocupacional", startDate: "2022-08-15", endDate: "2023-01-20" }
