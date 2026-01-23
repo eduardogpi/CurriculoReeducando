@@ -23,6 +23,7 @@ const ReeducandoList: React.FC = () => {
     const [searchText, setSearchText] = useState("");
     const [unitFilter, setUnitFilter] = useState<string | undefined>(undefined);
     const [skillFilter, setSkillFilter] = useState<string | undefined>(undefined);
+    const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
 
     // Listas únicas para selects de filtro
     const units = Array.from(new Set(MOCK_REEDUCANDOS.map(r => r.prisonUnit))).filter(Boolean);
@@ -46,8 +47,12 @@ const ReeducandoList: React.FC = () => {
             result = result.filter(item => item.skills.some(s => s.name === skillFilter));
         }
 
+        if (statusFilter) {
+            result = result.filter(item => item.status === statusFilter);
+        }
+
         setFilteredData(result);
-    }, [searchText, unitFilter, skillFilter, data]);
+    }, [searchText, unitFilter, skillFilter, statusFilter, data]);
 
 
     const handleAdd = () => {
@@ -183,7 +188,7 @@ const ReeducandoList: React.FC = () => {
 
                         <Card>
                             <Row gutter={16} style={{ marginBottom: 16 }}>
-                                <Col span={8}>
+                                <Col span={6}>
                                     <Input
                                         placeholder="Buscar por nome ou matrícula"
                                         prefix={<SearchOutlined />}
@@ -202,7 +207,7 @@ const ReeducandoList: React.FC = () => {
                                         {units.map(u => <Option key={u} value={u}>{u}</Option>)}
                                     </Select>
                                 </Col>
-                                <Col span={8}>
+                                <Col span={6}>
                                     <Select
                                         allowClear
                                         placeholder="Filtrar por Habilidade"
@@ -210,6 +215,17 @@ const ReeducandoList: React.FC = () => {
                                         onChange={value => setSkillFilter(value)}
                                     >
                                         {allSkills.map(s => <Option key={s} value={s}>{s}</Option>)}
+                                    </Select>
+                                </Col>
+                                <Col span={6}>
+                                    <Select
+                                        allowClear
+                                        placeholder="Filtrar por Status"
+                                        style={{ width: '100%' }}
+                                        onChange={value => setStatusFilter(value)}
+                                    >
+                                        <Option value="available">Disponível</Option>
+                                        <Option value="occupied">Ocupado</Option>
                                     </Select>
                                 </Col>
                             </Row>
