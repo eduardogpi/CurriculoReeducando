@@ -3,40 +3,33 @@
 
 import React, { useState } from "react";
 import {
-    Layout,
-    Card,
-    Avatar,
     Typography,
-    Switch,
     Button,
-    List,
-    Tag,
-    Row,
-    Col,
-    Space,
     App,
     Modal,
     Input,
     Form,
-    DatePicker
+    DatePicker,
+    Space,
+    Tag,
+    Switch
 } from "antd";
 import {
-    UserOutlined,
-    BookOutlined,
-    DownloadOutlined,
-    CheckCircleOutlined,
+    EnvironmentOutlined,
+    PhoneOutlined,
+    LinkOutlined,
     PlusOutlined,
     FilePdfOutlined,
-    ToolOutlined,
-    HistoryOutlined
+    CheckCircleOutlined,
+    EditOutlined
 } from "@ant-design/icons";
 import EducationModal from "./EducationModal";
 import dayjs from "dayjs";
 import { MOCK_REEDUCANDOS, Reeducando, EducationItem, SkillItem } from "@/data/mocks";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const { Title, Text } = Typography;
-const { Header, Content } = Layout;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { Text } = Typography;
 
 interface CurriculumContainerProps {
     prisonerId?: string;
@@ -57,7 +50,7 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
     const [isAvailableForWork, setIsAvailableForWork] = useState(true);
     const [educationList, setEducationList] = useState<EducationItem[]>([]);
 
-    // Skills com metadados
+    // Skills com metadados (usado como Histórico Profissional neste layout)
     const [skills, setSkills] = useState<SkillItem[]>([]);
 
     React.useEffect(() => {
@@ -99,7 +92,7 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
         setSkills([...skills, newSkill]);
         setIsSkillModalOpen(false);
         skillForm.resetFields();
-        message.success("Habilidade adicionada com sucesso!");
+        message.success("Experiência adicionada com sucesso!");
     };
 
     const handleChangePhoto = () => {
@@ -141,245 +134,211 @@ const CurriculumContainer: React.FC<CurriculumContainerProps> = ({ prisonerId })
         }
     };
 
-    const renderEducationList = (data: EducationItem[], title: string, emptyText: string, borderColor: string, icon: React.ReactNode, showActions: boolean = true) => (
-        <Card
-            title={<Space>{icon} <span>{title}</span></Space>}
-            className="shadow-md"
-            style={{ borderTop: `4px solid ${borderColor}`, height: '100%' }}
-        >
-            <List
-                itemLayout="vertical"
-                dataSource={data}
-                locale={{ emptyText }}
-                renderItem={(item) => (
-                    <List.Item
-                        actions={showActions ? [
-                            <Button
-                                key="download"
-                                type="link"
-                                icon={<DownloadOutlined />}
-                                disabled={!item.hasCertificate}
-                                onClick={() => message.info(`Baixando certificado: ${item.courseName}.pdf`)}
-                            >
-                                Baixar
-                            </Button>,
-                            <Button
-                                key="validate"
-                                type="link"
-                                icon={<CheckCircleOutlined />}
-                                disabled={!item.hasCertificate}
-                                onClick={() => handleValidation(item)}
-                            >
-                                Validar
-                            </Button>,
-                        ] : []}
-                    >
-                        <List.Item.Meta
-                            avatar={<Avatar icon={<FilePdfOutlined />} style={{ backgroundColor: item.hasCertificate ? '#1890ff' : '#ccc' }} />}
-                            title={<Text strong>{item.courseName}</Text>}
-                            description={
-                                <Space direction="vertical" size={0}>
-                                    <Text type="secondary">{item.institution} - {item.level}</Text>
-                                    <Text type="secondary">Conclusão: {dayjs(item.date).format("YYYY")}</Text>
-                                </Space>
-                            }
-                        />
-                        {item.hasCertificate ? (
-                            <Tag color="green">Certificado Disponível</Tag>
-                        ) : (
-                            <Tag color="orange">Pendente</Tag>
-                        )}
-                    </List.Item>
-                )}
-            />
-        </Card>
-    );
-
-    const coursesBefore = educationList.filter((item) => item.location === "external");
-    const coursesAfter = educationList.filter((item) => item.location === "internal");
-
     return (
-        <Layout style={{ minHeight: "100vh", background: "#f0f2f5" }}>
-            <Header style={{ background: "#000000", padding: "0 24px", display: 'flex', alignItems: 'center', gap: 16 }}>
-                <img src="/logo.jpg" alt="Logo" style={{ height: 40, borderRadius: 4 }} />
-                <Title level={3} style={{ color: "white", margin: 0 }}>
-                    Polícia Penal de Goiás - Currículo de {currentPrisoner?.name || "Reeducando"}
-                </Title>
-                <div style={{ marginLeft: "auto" }}>
-                    <Button type="text" style={{ color: "white" }} onClick={() => router.push("/")}>
-                        Voltar para Lista
-                    </Button>
+        <div style={{ paddingBottom: 100 }}>
+            <div className="resume-container">
+                {/* Header Institucional (Mistura do design anterior) */}
+                <div className="institutional-header">
+                    <img src="/logo.jpg" alt="Brasão Polícia Penal" className="institutional-logo" />
+                    <div className="institutional-text">
+                        <h1>Polícia Penal de Goiás</h1>
+                        <h2>Diretoria Geral de Administração Penitenciária</h2>
+                    </div>
+                    <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
+                         <Tag color="green" style={{ margin: 0, fontSize: 12 }}>DOCUMENTO OFICIAL</Tag>
+                    </div>
                 </div>
-            </Header>
-            <Content style={{ padding: "24px 50px" }}>
-                <div style={{ maxWidth: 1200, margin: "0 auto" }}>
 
-                    {/* Cabeçalho de Impressão (Visível apenas na impressão via CSS) */}
-                    <div className="print-header" style={{ display: 'none', textAlign: 'center', marginBottom: 20 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 15, marginBottom: 10 }}>
-                            <img src="/logo.jpg" alt="Brasão" style={{ height: 80 }} />
-                            <div style={{ textAlign: 'left' }}>
-                                <h1 style={{ margin: 0, fontSize: 24, textTransform: 'uppercase' }}>Polícia Penal de Goiás</h1>
-                                <h2 style={{ margin: 0, fontSize: 16, fontWeight: 'normal' }}>Sistema de Gestão Prisional</h2>
+                {/* Header do Currículo Moderno */}
+                <div className="resume-header">
+                    <div className="resume-photo-container">
+                        <img 
+                            src={currentPrisoner?.photoUrl} 
+                            alt={currentPrisoner?.name} 
+                            className="resume-photo"
+                            onClick={() => !isReadOnly && handleChangePhoto()}
+                            style={{ cursor: isReadOnly ? 'default' : 'pointer' }}
+                        />
+                        {!isReadOnly && <div style={{ position: 'absolute', bottom: 0, right: 0, background: 'white', padding: 2, cursor: 'pointer' }} onClick={handleChangePhoto}><EditOutlined /></div>}
+                    </div>
+                    <div className="resume-header-content">
+                        <h1 className="resume-name">{currentPrisoner?.name}</h1>
+                        <div className="resume-header-line"></div>
+                        <p className="resume-summary">
+                            Reeducando da unidade {currentPrisoner?.prisonUnit}, atualmente 
+                            {isAvailableForWork ? " disponível para oportunidades de trabalho e reintegração social. " : " engajado em atividades laborais na unidade. "}
+                            Comprometido com o desenvolvimento pessoal e profissional através de cursos de capacitação e atividades laborais supervisionadas.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Body */}
+                <div className="resume-body">
+                    {/* Sidebar */}
+                    <div className="resume-sidebar">
+                        
+                        <div className="sidebar-section">
+                            <h3 className="sidebar-title">Contato Institucional</h3>
+                            <div className="contact-item">
+                                <EnvironmentOutlined />
+                                <span>{currentPrisoner?.prisonUnit}</span>
+                            </div>
+                            <div className="contact-item">
+                                <PhoneOutlined />
+                                <span>(62) 3201-XXXX (Coord. Trabalho)</span>
+                            </div>
+                            <div className="contact-item">
+                                <LinkOutlined />
+                                <span>Matrícula: {currentPrisoner?.registration}</span>
                             </div>
                         </div>
-                        <h3 style={{ borderBottom: '2px solid #000', paddingBottom: 5, marginTop: 20 }}>CURRÍCULO DO REEDUCANDO</h3>
+
+                        <div className="sidebar-section" style={{ marginTop: 30 }}>
+                            <h3 className="sidebar-title">Habilidades</h3>
+                            <ul className="skill-list">
+                                <li>Disciplina e organização</li>
+                                <li>Trabalho em equipe supervisionado</li>
+                                <li>Cumprimento de normas de segurança</li>
+                                <li>Limpeza e conservação</li>
+                                <li>Manutenção básica</li>
+                            </ul>
+                        </div>
+                        
+                         <div className="sidebar-section" style={{ marginTop: 30 }}>
+                            <h3 className="sidebar-title">Situação Carcerária</h3>
+                             <Tag color={isAvailableForWork ? "#2e7d32" : "#faad14"} style={{ width: '100%', textAlign: 'center', padding: '5px 0', fontSize: 14, fontWeight: 'bold' }}>
+                                {isAvailableForWork ? "DISPONÍVEL P/ TRABALHO" : "EM ATIVIDADE LABORAL"}
+                            </Tag>
+                             {!isReadOnly && (
+                                <div style={{ marginTop: 10, textAlign: 'center' }} className="no-print">
+                                    <Switch
+                                        checkedChildren="Disponível"
+                                        unCheckedChildren="Ocupado"
+                                        checked={isAvailableForWork}
+                                        onChange={setIsAvailableForWork}
+                                        style={{ background: isAvailableForWork ? '#2e7d32' : '#faad14' }}
+                                    />
+                                </div>
+                            )}
+                        </div>
+
                     </div>
 
-                    {/* Header do Preso */}
-                    <Card className="mb-6 shadow-md bg-white" >
-                        <Row gutter={[24, 24]} align="middle">
-                            <Col xs={24} sm={4} style={{ textAlign: "center" }}>
-                                <div onClick={() => !isReadOnly && handleChangePhoto()} style={{ cursor: isReadOnly ? 'default' : 'pointer', display: 'inline-block' }}>
-                                    <Avatar
-                                        size={100}
-                                        src={currentPrisoner?.photoUrl}
-                                        icon={<UserOutlined />}
-                                        style={{ border: '2px solid #d9d9d9' }}
-                                    />
-                                    {!isReadOnly && <div style={{ fontSize: 12, marginTop: 4, color: '#1890ff' }}>Alterar Foto</div>}
-                                </div>
-                            </Col>
-                            <Col xs={24} sm={14}>
-                                <Title level={2} style={{ margin: 0 }}>{currentPrisoner?.name}</Title>
-                                <Text type="secondary" style={{ fontSize: 16, display: 'block' }}>Matrícula: {currentPrisoner?.registration}</Text>
-                                <Text type="secondary" style={{ fontSize: 14 }}>Unidade: {currentPrisoner?.prisonUnit}</Text>
-                                <div style={{ marginTop: 16 }}>
-                                    <Text strong style={{ marginRight: 8 }}>Situação de Trabalho:</Text>
-                                    {!isReadOnly ? (
-                                        <Switch
-                                            checkedChildren="Disponível para Trabalho Externo"
-                                            unCheckedChildren="Ocupado / Trabalhando"
-                                            checked={isAvailableForWork}
-                                            onChange={setIsAvailableForWork}
-                                            style={{ background: isAvailableForWork ? '#52c41a' : '#faad14' }}
-                                        />
-                                    ) : (
-                                        <></>
-                                    )}
-                                    <div style={{ marginTop: 8 }}>
-                                        <Tag color={isAvailableForWork ? "success" : "warning"}>
-                                            {isAvailableForWork ? "Disponível para Serviço Externo" : "Ocupado: Trabalho Interno"}
-                                        </Tag>
+                    {/* Main Content */}
+                    <div className="resume-main">
+                        
+                        <div className="main-section">
+                            <h2 className="main-title">Histórico Laboral e Profissional</h2>
+                            
+                            {skills.length > 0 ? skills.map((skill, index) => (
+                                <div key={index} className="experience-item">
+                                    <div className="job-title">{skill.name}</div>
+                                    <div className="job-company">{skill.source}</div>
+                                    <div className="job-date">
+                                        {dayjs(skill.startDate).format("MM/YYYY")} - 
+                                        {skill.endDate ? dayjs(skill.endDate).format("MM/YYYY") : " Atual"}
+                                    </div>
+                                    <div className="job-description">
+                                        <ul>
+                                            <li>Atividade realizada conforme atribuições designadas pela coordenação.</li>
+                                            <li>Avaliação positiva de desempenho e conduta.</li>
+                                        </ul>
                                     </div>
                                 </div>
-                            </Col>
-                            <Col xs={24} sm={6} style={{ textAlign: "right", display: 'flex', flexDirection: 'column', gap: 10 }}>
-                                <Card size="small" title={<Space><ToolOutlined />Experiência de Trabalho</Space>} style={{ textAlign: 'left' }} className="shadow-md">
-                                    <div style={{ maxHeight: 200, overflowY: 'auto' }}>
-                                        <List
-                                            itemLayout="horizontal"
-                                            dataSource={skills}
-                                            renderItem={(item) => (
-                                                <List.Item style={{ padding: '8px 0' }}>
-                                                    <List.Item.Meta
-                                                        avatar={<Avatar size="small" icon={<HistoryOutlined />} style={{ backgroundColor: '#1890ff' }} />}
-                                                        title={<Text strong>{item.name}</Text>}
-                                                        description={
-                                                            <div style={{ fontSize: 12 }}>
-                                                                <div>{item.source}</div>
-                                                                <Text type="secondary">
-                                                                    {dayjs(item.startDate).format("MMM/YYYY")} -
-                                                                    {item.endDate ? dayjs(item.endDate).format("MMM/YYYY") : " Atual"}
-                                                                </Text>
-                                                            </div>
-                                                        }
-                                                    />
-                                                </List.Item>
-                                            )}
-                                        />
-                                        {skills.length === 0 && <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 10 }}>Nenhuma experiência registrada.</Text>}
+                            )) : (
+                                <p style={{ color: '#999' }}>Nenhuma experiência laboral registrada no sistema.</p>
+                            )}
+                        </div>
+
+                        <div className="main-section">
+                            <h2 className="main-title">Educação e Capacitação</h2>
+                            
+                            {educationList.length > 0 ? educationList.map((edu, index) => (
+                                <div key={index} className="experience-item">
+                                    <div className="job-title">{edu.courseName} <span style={{ fontWeight: 'normal', fontSize: 14, color: '#666' }}>({edu.level})</span></div>
+                                    <div className="job-company">{edu.institution}</div>
+                                    <div className="job-date">Conclusão: {dayjs(edu.date).format("YYYY")}</div>
+                                    <div className="job-description">
+                                        {edu.location === 'internal' ? 'Curso de capacitação realizado no âmbito do sistema prisional.' : 'Formação acadêmica/escolar anterior ao ingresso.'}
+                                        {edu.hasCertificate && (
+                                            <div className="no-print" style={{ marginTop: 5 }}>
+                                                 <Space>
+                                                    <Tag color="#2e7d32" icon={<CheckCircleOutlined />}>Certificado Validado</Tag>
+                                                    <Button type="link" size="small" style={{ color: '#1b4d3e' }} onClick={() => handleValidation(edu)}>Verificar Autenticidade</Button>
+                                                 </Space>
+                                            </div>
+                                        )}
                                     </div>
-                                    <Button type="dashed" icon={<PlusOutlined />} block onClick={() => setIsSkillModalOpen(true)} disabled={isReadOnly}>
-                                        Adicionar Experiência
-                                    </Button>
-                                </Card>
-                            </Col>
-                        </Row>
-                        <Row justify="end" style={{ marginTop: 16 }}>
-                            <Col>
-                                <Space>
-                                    {!isReadOnly && (
-                                        <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsEducationModalOpen(true)}>
-                                            Adicionar Curso
-                                        </Button>
-                                    )}
-                                    <Button icon={<FilePdfOutlined />} onClick={() => window.print()}>
-                                        Imprimir Currículo
-                                    </Button>
-                                    {!isReadOnly && (
-                                        <Button icon={<CheckCircleOutlined />} onClick={() => message.success("Todos os certificados validados com sucesso!")}>
-                                            Validar Certificados
-                                        </Button>
-                                    )}
-                                </Space>
-                            </Col>
-                        </Row>
-                    </Card>
-
-                    {/* Listas de Educação */}
-                    <Row gutter={[32, 32]} style={{ marginBottom: 24 }}>
-                        <Col xs={24} lg={12}>
-                            {renderEducationList(
-                                coursesBefore,
-                                "Histórico Pregresso",
-                                "Nenhum registro anterior encontrado.",
-                                "#1890ff", // Azul para externo
-                                <BookOutlined style={{ color: "#1890ff" }} />,
-                                false // showActions = false
+                                </div>
+                            )) : (
+                                <p style={{ color: '#999' }}>Nenhuma formação acadêmica registrada.</p>
                             )}
-                        </Col>
-                        <Col xs={24} lg={12}>
-                            {renderEducationList(
-                                coursesAfter,
-                                "Educação no Sistema Prisional",
-                                "Nenhum curso realizado no sistema.",
-                                "#52c41a", // Verde para interno
-                                <CheckCircleOutlined style={{ color: "#52c41a" }} />
-                            )}
-                        </Col>
-                    </Row>
+                        </div>
+                        
+                        <div className="main-section">
+                            <h2 className="main-title">Observações do Serviço Social</h2>
+                            <ul className="skill-list" style={{ color: '#333' }}>
+                                <li>Reeducando demonstra boa conduta carcerária.</li>
+                                <li>Participação assídua em projetos de ressocialização.</li>
+                                <li>Apto para atividades laborais que exijam responsabilidade e comprometimento.</li>
+                            </ul>
+                        </div>
 
-                    {/* Modais */}
-                    <EducationModal
-                        open={isEducationModalOpen}
-                        onCreate={handleCreateEducation}
-                        onCancel={() => setIsEducationModalOpen(false)}
-                    />
-
-                    <Modal
-                        title="Adicionar Experiência de Trabalho / Habilidade"
-                        open={isSkillModalOpen}
-                        onOk={() => skillForm.submit()}
-                        onCancel={() => setIsSkillModalOpen(false)}
-                        okText="Adicionar"
-                        cancelText="Cancelar"
-                    >
-                        <Form form={skillForm} layout="vertical" onFinish={handleAddSkill}>
-                            <Form.Item name="name" label="Função / Habilidade" rules={[{ required: true, message: 'Obrigatório' }]}>
-                                <Input placeholder="Ex: Eletricista, Pintor" />
-                            </Form.Item>
-                            <Form.Item name="source" label="Local / Instituição" rules={[{ required: true, message: 'Obrigatório' }]}>
-                                <Input placeholder="Ex: Manutenção Predial, Curso SENAI" />
-                            </Form.Item>
-                            <Row gutter={16}>
-                                <Col span={12}>
-                                    <Form.Item name="startDate" label="Data de Início" rules={[{ required: true, message: 'Obrigatório' }]}>
-                                        <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" placeholder="Selecione" />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={12}>
-                                    <Form.Item name="endDate" label="Data de Término" extra="Deixe em branco se for atual">
-                                        <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" placeholder="Selecione" />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                        </Form>
-                    </Modal>
-
+                    </div>
                 </div>
-            </Content>
-        </Layout>
+            </div>
+
+            {/* Floating Action Bar */}
+            <div className="action-bar no-print">
+                <Button onClick={() => router.push("/")}>Voltar</Button>
+                {!isReadOnly && (
+                    <>
+                        <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsEducationModalOpen(true)}>
+                            Add Curso
+                        </Button>
+                        <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsSkillModalOpen(true)}>
+                            Add Experiência
+                        </Button>
+                    </>
+                )}
+                <Button icon={<FilePdfOutlined />} onClick={() => window.print()}>
+                    Imprimir
+                </Button>
+            </div>
+
+            {/* Modals */}
+            <EducationModal
+                open={isEducationModalOpen}
+                onCreate={handleCreateEducation}
+                onCancel={() => setIsEducationModalOpen(false)}
+            />
+
+            <Modal
+                title="Adicionar Experiência Profissional"
+                open={isSkillModalOpen}
+                onOk={() => skillForm.submit()}
+                onCancel={() => setIsSkillModalOpen(false)}
+                okText="Adicionar"
+                cancelText="Cancelar"
+            >
+                <Form form={skillForm} layout="vertical" onFinish={handleAddSkill}>
+                    <Form.Item name="name" label="Cargo / Função" rules={[{ required: true, message: 'Obrigatório' }]}>
+                        <Input placeholder="Ex: Eletricista, Pintor" />
+                    </Form.Item>
+                    <Form.Item name="source" label="Empresa / Local / Instituição" rules={[{ required: true, message: 'Obrigatório' }]}>
+                        <Input placeholder="Ex: Manutenção Predial, Cozinha" />
+                    </Form.Item>
+                    <div style={{ display: 'flex', gap: 16 }}>
+                        <Form.Item name="startDate" label="Início" rules={[{ required: true, message: 'Obrigatório' }]} style={{ flex: 1 }}>
+                            <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" placeholder="Selecione" />
+                        </Form.Item>
+                        <Form.Item name="endDate" label="Término" extra="Deixe em branco se for atual" style={{ flex: 1 }}>
+                            <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" placeholder="Selecione" />
+                        </Form.Item>
+                    </div>
+                </Form>
+            </Modal>
+        </div>
     );
 };
 

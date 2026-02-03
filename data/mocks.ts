@@ -6,7 +6,7 @@ export interface EducationItem {
     courseName: string;
     institution: string;
     location: "internal" | "external";
-    date: any; // dayjs object or string
+    date: dayjs.Dayjs | string;
     hasCertificate: boolean;
     validationHash?: string; // Para internos
     externalValidationLink?: string; // Para externos
@@ -33,131 +33,134 @@ export interface Reeducando {
 export const MOCK_REEDUCANDOS: Reeducando[] = [
     {
         id: "1",
-        name: "João da Silva",
-        registration: "123456-78",
-        prisonUnit: "Casa de Prisão Provisória",
+        name: "Carlos Eduardo Mendes",
+        registration: "2018.05432-1",
+        prisonUnit: "Complexo Prisional de Aparecida de Goiânia",
         status: "available",
-        photoUrl: "https://randomuser.me/api/portraits/men/1.jpg",
+        photoUrl: "https://randomuser.me/api/portraits/men/32.jpg",
         skills: [
-            { name: "Eletricista", source: "Curso Profissionalizante SENAI", startDate: "2023-01-10", endDate: "2023-06-15" },
-            { name: "Pintura", source: "Manutenção Predial Interna", startDate: "2023-07-01" } // Em aberto
+            { name: "Eletricista Predial", source: "Programa de Capacitação Interna", startDate: "2023-02-15", endDate: "2023-08-20" },
+            { name: "Auxiliar de Manutenção", source: "Manutenção Geral do Bloco C", startDate: "2023-09-01" }, // Atual
+            { name: "Pedreiro de Acabamento", source: "Obra de Reforma da Enfermaria", startDate: "2022-01-10", endDate: "2022-11-30" }
         ],
         educationHistory: [
             {
                 id: "101",
-                level: "Médio Completo",
-                courseName: "Ensino Médio",
-                institution: "Escola Estadual Santos Dumont",
-                location: "external",
-                date: dayjs("2010", "YYYY"),
+                level: "Ensino Médio",
+                courseName: "Educação de Jovens e Adultos (EJA)",
+                institution: "Escola Estadual no Sistema Prisional",
+                location: "internal",
+                date: dayjs("2022-12-01"),
                 hasCertificate: true,
-                externalValidationLink: "https://educacao.gov.br/validar/12345"
+                validationHash: "EJA-2022-8874"
             },
             {
                 id: "102",
-                level: "Técnico",
-                courseName: "Eletricista Predial",
-                institution: "SENAI",
+                level: "Qualificação Profissional",
+                courseName: "Instalações Elétricas Residenciais",
+                institution: "SENAI / Parceira DGAP",
                 location: "internal",
-                date: dayjs("2024", "YYYY"),
+                date: dayjs("2023-08-20"),
                 hasCertificate: true,
-                validationHash: "CERT123"
+                validationHash: "SENAI-ELE-9901"
             },
+            {
+                id: "103",
+                level: "Fundamental Completo",
+                courseName: "Ensino Fundamental",
+                institution: "Escola Municipal Cora Coralina",
+                location: "external",
+                date: dayjs("2010-12-15"),
+                hasCertificate: true,
+            }
         ],
     },
     {
         id: "2",
-        name: "Maria Oliveira",
-        registration: "876543-21",
-        prisonUnit: "Unidade Prisional Feminina da 1º Regional",
+        name: "Fernanda da Silva Costa",
+        registration: "2019.11200-5",
+        prisonUnit: "Unidade Prisional Feminina de Goiânia",
         status: "occupied",
-        photoUrl: "https://randomuser.me/api/portraits/women/2.jpg",
+        photoUrl: "https://randomuser.me/api/portraits/women/44.jpg",
         skills: [
-            { name: "Costura", source: "Oficina de Costura Prisional", startDate: "2022-03-01" },
-            { name: "Artesanato", source: "Atividade Ocupacional", startDate: "2022-08-15", endDate: "2023-01-20" }
+            { name: "Costureira Industrial", source: "Confecção de Uniformes (Projeto Ressocializar)", startDate: "2021-05-10" },
+            { name: "Bordado e Artesanato", source: "Ateliê de Artes", startDate: "2020-03-01", endDate: "2021-04-01" }
         ],
         educationHistory: [
             {
                 id: "201",
-                level: "Superior Completo",
-                courseName: "Administração",
-                institution: "Universidade Federal",
+                level: "Ensino Médio Completo",
+                courseName: "Formação Geral",
+                institution: "Colégio Estadual Pedro Ludovico",
                 location: "external",
-                date: dayjs("2015", "YYYY"),
+                date: dayjs("2015-12-10"),
                 hasCertificate: true,
-                externalValidationLink: "https://uf.edu.br/diplomas/verify"
             },
             {
                 id: "202",
-                level: "Profissionalizante",
-                courseName: "Costura Industrial",
-                institution: "Sistema Prisional",
+                level: "Qualificação Profissional",
+                courseName: "Corte e Costura Industrial",
+                institution: "COTEG / Sistema Prisional",
                 location: "internal",
-                date: dayjs("2023", "YYYY"),
-                hasCertificate: false,
-            },
-            {
-                id: "203",
-                level: "Técnico",
-                courseName: "Logística",
-                institution: "IFPB",
-                location: "external",
-                date: dayjs("2018", "YYYY"),
+                date: dayjs("2021-04-30"),
                 hasCertificate: true,
-            },
+                validationHash: "COST-21-554"
+            }
         ],
     },
     {
         id: "3",
-        name: "Carlos Souza",
-        registration: "112233-44",
-        prisonUnit: "Penitenciária Odenir Guimarães",
+        name: "Roberto Almeida Santos",
+        registration: "2021.00988-7",
+        prisonUnit: "Presídio Estadual de Anápolis",
         status: "available",
+        photoUrl: "https://randomuser.me/api/portraits/men/85.jpg",
         skills: [
-            { name: "Cozinha", source: "Cozinha Geral da Unidade", startDate: "2023-05-10" }
+            { name: "Jardinagem e Paisagismo", source: "Horta Comunitária da Unidade", startDate: "2022-06-01" },
+            { name: "Cozinheiro Industrial", source: "Cozinha Geral", startDate: "2021-08-15", endDate: "2022-05-20" }
         ],
-        educationHistory: [], // Sem cursos
+        educationHistory: [
+            {
+                id: "301",
+                level: "Ensino Fundamental Incompleto",
+                courseName: "4ª Série",
+                institution: "Escola Municipal",
+                location: "external",
+                date: dayjs("2005-12-01"),
+                hasCertificate: false,
+            }
+        ], 
     },
     {
         id: "4",
-        name: "Ana Santos",
-        registration: "556677-88",
-        prisonUnit: "Unidade Prisional Feminina da 1º Regional",
+        name: "Juliana Martins Rocha",
+        registration: "2020.33441-9",
+        prisonUnit: "CPP de Rio Verde",
         status: "occupied",
+        photoUrl: "https://randomuser.me/api/portraits/women/68.jpg",
         skills: [
-            { name: "Limpeza", source: "Faxina Geral", startDate: "2022-01-10", endDate: "2022-12-20" },
-            { name: "Jardinagem", source: "Horta Comunitária", startDate: "2023-01-05" }
+            { name: "Auxiliar Administrativo", source: "Secretaria da Unidade (Trabalho Interno)", startDate: "2023-01-15" }
         ],
         educationHistory: [
             {
                 id: "401",
-                level: "Fundamental Completo",
-                courseName: "Ensino Fundamental",
-                institution: "EJA",
-                location: "internal",
-                date: dayjs("2022", "YYYY"),
-                hasCertificate: true,
-                validationHash: "CERT456"
-            },
-        ],
-    },
-    {
-        id: "5",
-        name: "Pedro Rocha",
-        registration: "998877-66",
-        prisonUnit: "Casa de Prisão Provisória",
-        status: "available",
-        skills: [],
-        educationHistory: [
-            {
-                id: "501",
                 level: "Superior Incompleto",
-                courseName: "Direito",
-                institution: "Unicap",
+                courseName: "Gestão de Recursos Humanos",
+                institution: "Universidade Estácio de Sá",
                 location: "external",
-                date: dayjs("2019", "YYYY"),
+                date: dayjs("2019-12-01"),
                 hasCertificate: false,
             },
+            {
+                id: "402",
+                level: "Curso Livre",
+                courseName: "Informática Básica",
+                institution: "Laboratório de Informática Prisional",
+                location: "internal",
+                date: dayjs("2022-11-20"),
+                hasCertificate: true,
+                validationHash: "INFO-22-909"
+            }
         ],
-    },
+    }
 ];
